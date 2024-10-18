@@ -1,16 +1,25 @@
-import { Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { Header } from "../../components/header";
 import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { GroupCard } from "../../components/groupCard";
+import { useState } from "react";
 
 export function Groups() {
-  return (
-    <View className="items-center justify-center bg-GRAY_600 h-full p-6">
-      <Header />
-      <TitleAndSubtitle title="Turmas" subtitle="jogue com a sua turma" />
-      <GroupCard title="Nome da turma" />
+  const [groups, setGroups] = useState<string[]>(["Teste Array", "Queijo"]);
 
-      <Text className="text-zinc-50 font-bold">Groups</Text>
+  return (
+    <View className="bg-GRAY_600 h-full p-6 items-center">
+      <Header />
+
+      <TitleAndSubtitle title="Turmas" subtitle="jogue com a sua turma" />
+
+      <FlatList
+        showsVerticalScrollIndicator={false} // rremover scroll
+        className="w-full"
+        data={groups}
+        keyExtractor={(item) => item} // key
+        renderItem={({ item }) => <GroupCard key={item} title={item} />}
+      />
     </View>
   );
 }
