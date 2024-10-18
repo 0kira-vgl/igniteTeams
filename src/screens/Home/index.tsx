@@ -1,11 +1,12 @@
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Pressable, View, Text } from "react-native";
 import { Header } from "../../components/header";
 import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { GroupCard } from "../../components/groupCard";
 import { useState } from "react";
 import { ListEmpty } from "../../components/listEmpty";
+import { Button } from "../../components/button";
 
-export function Groups() {
+export function Home() {
   const [groups, setGroups] = useState<string[]>([]);
 
   return (
@@ -29,6 +30,8 @@ export function Groups() {
           );
         }}
       />
+
+      <Button title="Criar nova turma" />
     </View>
   );
 }

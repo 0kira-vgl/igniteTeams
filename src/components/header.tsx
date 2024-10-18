@@ -1,4 +1,4 @@
-import { Image, Pressable, View } from "react-native";
+import { Image, Pressable, View, Text } from "react-native";
 import LogoImg from "../assets/logo.png";
 import { ChevronLeft } from "lucide-react-native";
 
