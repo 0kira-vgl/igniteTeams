@@ -9,11 +9,11 @@ export function GroupCard({ title, ...rest }: GroupCardProps) {
   return (
     <Pressable
       {...rest}
-      className="w-full h-24 rounded-md bg-GRAY_500 flex-row items-center p-6 mb-3"
+      className="h-24 rounded-md bg-GRAY_500 flex-row items-center w-full p-6 mb-3"
     >
       <Users size={30} color="#00875F" />
 
-      <Text className="text-xl text-GRAY_200 ml-5">{title}</Text>
+      <Text className="text-xl w-full text-GRAY_200 ml-5">{title}</Text>
     </Pressable>
   );
 }
