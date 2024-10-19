@@ -5,11 +5,14 @@ import { ButtonIcon } from "../../components/buttonIcon";
 import { Input } from "../../components/input";
 import { Filter } from "../../components/filter";
 import { useState } from "react";
+import { PlayerCard } from "../../components/playerCard";
+import { ListEmpty } from "../../components/listEmpty";
+import { Button } from "../../components/button";
 
 export function Players() {
   // declarando o estado para o time atual e a lista de jogadores
   const [team, setTeam] = useState("Time A"); // inicializa o estado do time com "Time A"
-  const [players, setPlayers] = useState([]); // inicializa o estado dos jogadores como um array vazio
+  const [players, setPlayers] = useState(["Rodrigo", "Vini"]); // inicializa o estado dos jogadores como um array vazio
 
   return (
     <View className="h-screen bg-GRAY_600 p-6">
@@ -36,7 +39,7 @@ export function Players() {
           flexDirection: "row",
           alignItems: "center",
           marginTop: 32,
-          marginBottom: 12,
+          marginBottom: 20,
         }}
       >
         <FlatList
@@ -56,6 +59,29 @@ export function Players() {
           {players.length} {/* Mostra o número total de jogadores */}
         </Text>
       </View>
+
+      <FlatList
+        data={players}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => (
+          <PlayerCard onRemove={() => {}} name="Rodrigo Gonçalves" />
+        )}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          { paddingBottom: 150 },
+          players.length === 0 && { flex: 1 },
+        ]} // centraliza a mensagem caso a lista estiver vazia
+        ListEmptyComponent={() => {
+          return (
+            <ListEmpty
+              title="Não há pessoas nesse time"
+              subtitle="Que tal adicionar a primeira pessoa?"
+            />
+          );
+        }}
+      />
+
+      <Button title="Remover turma" variant="secondary" />
     </View>
   );
 }
