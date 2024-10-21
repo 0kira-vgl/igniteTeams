@@ -1,8 +1,6 @@
 import "./global.css";
 import { StatusBar } from "react-native";
-import { Home } from "./src/screens/Home";
-import { NewGroup } from "./src/screens/NewGroup";
-import { Players } from "./src/screens/Players";
+import { Routes } from "./src/routes";
 
 export default function App() {
   return (
@@ -12,9 +10,8 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {/* <Home /> */}
-      {/* <NewGroup /> */}
-      <Players />
+
+      <Routes />
     </>
   );
 }

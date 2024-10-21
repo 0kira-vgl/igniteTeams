@@ -4,8 +4,15 @@ import { Users } from "lucide-react-native";
 import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { Button } from "../../components/button";
 import { Input } from "../../components/input";
+import { useNavigation } from "@react-navigation/native";
 
 export function NewGroup() {
+  const navigation = useNavigation();
+
+  function handleNewGroup() {
+    navigation.navigate("players", { group: "Rocket" });
+  }
+
   return (
     <View className="h-full bg-GRAY_600 p-6">
       <Header showBackButton />
@@ -20,7 +27,11 @@ export function NewGroup() {
 
           <Input placeholder="Nome da turma" />
 
-          <Button title="Criar" style={{ marginTop: 20 }} />
+          <Button
+            title="Criar"
+            onPress={handleNewGroup}
+            style={{ marginTop: 20 }}
+          />
         </View>
       </View>
     </View>

@@ -1,13 +1,19 @@
-import { FlatList, Pressable, View, Text } from "react-native";
+import { FlatList, View } from "react-native";
 import { Header } from "../../components/header";
 import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { GroupCard } from "../../components/groupCard";
 import { useState } from "react";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
+import { useNavigation } from "@react-navigation/native";
 
 export function Home() {
-  const [groups, setGroups] = useState<string[]>([]);
+  const [groups, setGroups] = useState<string[]>([]); // lista de usuarios
+  const navigation = useNavigation();
+
+  function handleNewGroup() {
+    navigation.navigate("newGroup"); // mavegação para quando o usuário clicar no botão
+  }
 
   return (
     <View className="bg-GRAY_600 h-full p-6 items-center">
@@ -31,7 +37,7 @@ export function Home() {
         }}
       />
 
-      <Button title="Criar nova turma" />
+      <Button title="Criar nova turma" onPress={handleNewGroup} />
     </View>
   );
 }
