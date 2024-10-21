@@ -9,11 +9,19 @@ import { PlayerCard } from "../../components/playerCard";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRoute } from "@react-navigation/native";
+
+type PlayersProps = {
+  group: string;
+};
 
 export function Players() {
   // declarando o estado para o time atual e a lista de jogadores
   const [team, setTeam] = useState("Time A"); // inicializa o estado do time com "Time A"
-  const [players, setPlayers] = useState(["Rodrigo", "Vini"]); // inicializa o estado dos jogadores como um array vazio
+  const [players, setPlayers] = useState([]); // inicializa o estado dos jogadores como um array vazio
+
+  const route = useRoute();
+  const { group } = route.params as PlayersProps;
 
   return (
     <SafeAreaView
@@ -27,7 +35,7 @@ export function Players() {
       <Header showBackButton />
 
       <TitleAndSubtitle
-        title="Nome da turma"
+        title={group}
         subtitle="adicione a galera e separe os times"
       />
 
@@ -72,7 +80,7 @@ export function Players() {
         data={players}
         keyExtractor={(item) => item}
         renderItem={({ item }) => (
-          <PlayerCard onRemove={() => {}} name="Rodrigo Gonçalves" />
+          <PlayerCard onRemove={() => {}} name={item} />
         )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[

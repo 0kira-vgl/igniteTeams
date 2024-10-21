@@ -6,12 +6,14 @@ import { Button } from "../../components/button";
 import { Input } from "../../components/input";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
 
 export function NewGroup() {
+  const [group, setGroup] = useState("");
   const navigation = useNavigation();
 
   function handleNewGroup() {
-    navigation.navigate("players", { group: "Rocket" });
+    navigation.navigate("players", { group });
   }
 
   return (
@@ -33,7 +35,7 @@ export function NewGroup() {
             subtitle="crie uma turma para adicionar pessoas"
           />
 
-          <Input placeholder="Nome da turma" />
+          <Input placeholder="Nome da turma" onChangeText={setGroup} />
 
           <Button
             title="Criar"
