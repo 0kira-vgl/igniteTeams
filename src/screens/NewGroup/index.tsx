@@ -5,6 +5,7 @@ import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { Button } from "../../components/button";
 import { Input } from "../../components/input";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export function NewGroup() {
   const navigation = useNavigation();
@@ -14,7 +15,14 @@ export function NewGroup() {
   }
 
   return (
-    <View className="h-full bg-GRAY_600 p-6">
+    <SafeAreaView
+      style={{
+        height: "100%",
+        backgroundColor: "#202024",
+        padding: 24,
+      }}
+      className="h-full bg-GRAY_600 p-6"
+    >
       <Header showBackButton />
 
       <View className="h-full justify-center">
@@ -34,6 +42,6 @@ export function NewGroup() {
           />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

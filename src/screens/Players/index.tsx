@@ -8,6 +8,7 @@ import { useState } from "react";
 import { PlayerCard } from "../../components/playerCard";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export function Players() {
   // declarando o estado para o time atual e a lista de jogadores
@@ -15,7 +16,14 @@ export function Players() {
   const [players, setPlayers] = useState(["Rodrigo", "Vini"]); // inicializa o estado dos jogadores como um array vazio
 
   return (
-    <View className="h-screen bg-GRAY_600 p-6">
+    <SafeAreaView
+      style={{
+        height: "100%",
+        backgroundColor: "#202024",
+        padding: 24,
+      }}
+      className="h-screen bg-GRAY_600 p-6"
+    >
       <Header showBackButton />
 
       <TitleAndSubtitle
@@ -82,6 +90,6 @@ export function Players() {
       />
 
       <Button title="Remover turma" variant="secondary" />
-    </View>
+    </SafeAreaView>
   );
 }

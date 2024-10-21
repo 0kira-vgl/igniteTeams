@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export function Home() {
   const [groups, setGroups] = useState<string[]>([]); // lista de usuarios
@@ -16,7 +17,14 @@ export function Home() {
   }
 
   return (
-    <View className="bg-GRAY_600 h-full p-6 items-center">
+    <SafeAreaView
+      style={{
+        backgroundColor: "#202024",
+        height: "100%",
+        padding: 24,
+      }}
+      className="bg-GRAY_600 h-screen p-6"
+    >
       <Header />
 
       <TitleAndSubtitle title="Turmas" subtitle="jogue com a sua turma" />
@@ -38,6 +46,6 @@ export function Home() {
       />
 
       <Button title="Criar nova turma" onPress={handleNewGroup} />
-    </View>
+    </SafeAreaView>
   );
 }
