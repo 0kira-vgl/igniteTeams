@@ -11,8 +11,9 @@ import { Button } from "../../components/button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
 
+// define a tipagem para os parâmetros que o componente Players receberá via navegação
 type PlayersProps = {
-  group: string;
+  group: string; // group: o nome do grupo que é passado como parâmetro lá no @types
 };
 
 export function Players() {
@@ -20,8 +21,9 @@ export function Players() {
   const [team, setTeam] = useState("Time A"); // inicializa o estado do time com "Time A"
   const [players, setPlayers] = useState([]); // inicializa o estado dos jogadores como um array vazio
 
-  const route = useRoute();
-  const { group } = route.params as PlayersProps;
+  // obtém os parâmetros da rota atual
+  const route = useRoute(); // chama o hook useRoute para acessar os parâmetros da rota
+  const { group } = route.params as PlayersProps; // extrai o parâmetro 'group' da rota e o tipa como PlayersProps
 
   return (
     <SafeAreaView
@@ -35,7 +37,7 @@ export function Players() {
       <Header showBackButton />
 
       <TitleAndSubtitle
-        title={group}
+        title={group} // exibe o nome do grupo passado como parâmetro na tela
         subtitle="adicione a galera e separe os times"
       />
 
@@ -72,7 +74,7 @@ export function Players() {
         />
 
         <Text className="text-GRAY_200 font-bold text-lg">
-          {players.length} {/* Mostra o número total de jogadores */}
+          {players.length} {/* mostra o número total de jogadores */}
         </Text>
       </View>
 
@@ -85,8 +87,8 @@ export function Players() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           { paddingBottom: 150 },
-          players.length === 0 && { flex: 1 },
-        ]} // centraliza a mensagem caso a lista estiver vazia
+          players.length === 0 && { flex: 1 }, // centraliza a mensagem caso a lista estiver vazia
+        ]}
         ListEmptyComponent={() => {
           return (
             <ListEmpty

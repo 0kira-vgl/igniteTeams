@@ -2,11 +2,12 @@ import { FlatList, View } from "react-native";
 import { Header } from "../../components/header";
 import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { GroupCard } from "../../components/groupCard";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { groupsGetAll } from "../../storage/group/groupsGetAll";
 
 export function Home() {
   const [groups, setGroups] = useState<string[]>([]); // lista de usuarios
@@ -15,6 +16,25 @@ export function Home() {
   function handleNewGroup() {
     navigation.navigate("newGroup"); // mavegação para quando o usuário clicar no botão
   }
+
+  async function fetchGroups() {
+    try {
+      const data = await groupsGetAll(); // pega a lista de groups
+      setGroups(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function handleOpenGroup(group: string) {
+    navigation.navigate("players", { group }); // abre a lista de pessoas no grupo
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchGroups(); // carrega as turmas ao iniciar a tela
+    }, [])
+  );
 
   return (
     <SafeAreaView
@@ -33,7 +53,9 @@ export function Home() {
         showsVerticalScrollIndicator={false} // rremover scroll
         data={groups}
         keyExtractor={(item) => item} // key
-        renderItem={({ item }) => <GroupCard key={item} title={item} />}
+        renderItem={({ item }) => (
+          <GroupCard onPress={() => handleOpenGroup(item)} title={item} />
+        )}
         contentContainerStyle={groups.length === 0 && { flex: 1 }} // "centraliza" o ListEmpty caso a lista estiver vazia
         ListEmptyComponent={() => {
           return (
