@@ -1,10 +1,10 @@
-import { FlatList, View, Text, Alert } from "react-native";
+import { FlatList, View, Text, Alert, TextInput } from "react-native";
 import { Header } from "../../components/header";
 import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { ButtonIcon } from "../../components/buttonIcon";
 import { Input } from "../../components/input";
 import { Filter } from "../../components/filter";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { PlayerCard } from "../../components/playerCard";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
@@ -31,6 +31,8 @@ export function Players() {
   const route = useRoute(); // chama o hook useRoute para acessar os parâmetros da rota
   const { group } = route.params as PlayersProps; // extrai o parâmetro 'group' da rota e o tipa como PlayersProps
 
+  const newPlayerNameInputRef = useRef<TextInput>(null);
+
   async function handleAddPlayer() {
     // verifica se o campo "newPlayerName" está vazio ou contém apenas espaços em branco
     if (newPlayerName.trim().length === 0) {
@@ -49,6 +51,10 @@ export function Players() {
     try {
       // tenta adicionar o novo jogador ao grupo chamando uma função assíncrona que manipula a adição no banco de dados ou armazenamento
       await playerAddGroup(newPlayer, group);
+
+      newPlayerNameInputRef.current?.blur();
+
+      setNewPlayerName(""); // limpa o input
       fetchPlayersTeam();
     } catch (error) {
       if (error instanceof AppError) {
@@ -92,9 +98,13 @@ export function Players() {
 
       <View className="w-full bg-GRAY_700 flex-row items-center justify-center rounded-md">
         <Input
+          inputRef={newPlayerNameInputRef}
           placeholder="Nome do participante"
           onChangeText={setNewPlayerName}
+          value={newPlayerName}
           autoCorrect={false} // desativa a correção automática
+          onSubmitEditing={handleAddPlayer} // faz o botão "concluido" funcionar
+          returnKeyType="done" // add o botão "concluido" no teclado
           className="flex-1"
         />
 
