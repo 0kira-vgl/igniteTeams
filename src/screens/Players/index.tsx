@@ -1,4 +1,4 @@
-import { FlatList, View, Text } from "react-native";
+import { FlatList, View, Text, Alert } from "react-native";
 import { Header } from "../../components/header";
 import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { ButtonIcon } from "../../components/buttonIcon";
@@ -10,6 +10,9 @@ import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
+import { AppError } from "../../utils/AppError";
+import { playerAddGroup } from "../../storage/player/playerAddGroup";
+import { playersGetGroup } from "../../storage/player/playersGetGroup";
 
 // define a tipagem para os parâmetros que o componente Players receberá via navegação
 type PlayersProps = {
@@ -17,6 +20,8 @@ type PlayersProps = {
 };
 
 export function Players() {
+  const [newPlayerName, setNewPlayerName] = useState(""); // guarda o nome digitado
+
   // declarando o estado para o time atual e a lista de jogadores
   const [team, setTeam] = useState("Time A"); // inicializa o estado do time com "Time A"
   const [players, setPlayers] = useState([]); // inicializa o estado dos jogadores como um array vazio
@@ -25,81 +30,110 @@ export function Players() {
   const route = useRoute(); // chama o hook useRoute para acessar os parâmetros da rota
   const { group } = route.params as PlayersProps; // extrai o parâmetro 'group' da rota e o tipa como PlayersProps
 
-  return (
-    <SafeAreaView
-      style={{
-        height: "100%",
-        backgroundColor: "#202024",
-        padding: 24,
-      }}
-      className="h-screen bg-GRAY_600 p-6"
-    >
-      <Header showBackButton />
+  async function handleAddPlayer() {
+    if (newPlayerName.trim().length === 0) {
+      return Alert.alert(
+        "Nova Pessoa",
+        "Informe o nome da pessoa para adicionar."
+      );
+    }
 
-      <TitleAndSubtitle
-        title={group} // exibe o nome do grupo passado como parâmetro na tela
-        subtitle="adicione a galera e separe os times"
-      />
+    const newPlayer = {
+      name: newPlayerName,
+      team,
+    };
 
-      <View className="w-full bg-GRAY_700 flex-row items-center justify-center rounded-md">
-        <Input
-          placeholder="Nome do participante"
-          autoCorrect={false} // desativa a correção automática
-          className="flex-1"
+    try {
+      await playerAddGroup(newPlayer, group);
+      const players = await playersGetGroup(group);
+
+      console.log(players);
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert("Nova Pessoa", error.message);
+      } else {
+        console.log(error);
+        Alert.alert("Nova Pessoa", "Não foi possível adicionar.");
+      }
+    }
+
+    return (
+      <SafeAreaView
+        style={{
+          height: "100%",
+          backgroundColor: "#202024",
+          padding: 24,
+        }}
+        className="h-screen bg-GRAY_600 p-6"
+      >
+        <Header showBackButton />
+
+        <TitleAndSubtitle
+          title={group} // exibe o nome do grupo passado como parâmetro na tela
+          subtitle="adicione a galera e separe os times"
         />
 
-        <ButtonIcon icon="add" color="#00875F" />
-      </View>
+        <View className="w-full bg-GRAY_700 flex-row items-center justify-center rounded-md">
+          <Input
+            placeholder="Nome do participante"
+            onChangeText={setNewPlayerName}
+            autoCorrect={false} // desativa a correção automática
+            className="flex-1"
+          />
 
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          alignItems: "center",
-          marginTop: 32,
-          marginBottom: 20,
-        }}
-      >
+          <ButtonIcon onPress={handleAddPlayer} icon="add" color="#00875F" />
+        </View>
+
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: 32,
+            marginBottom: 20,
+          }}
+        >
+          <FlatList
+            data={["Time A", "Time B"]}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <Filter
+                title={item}
+                isActive={item === team} // verifica se o time atual é o mesmo do filtro
+                onPress={() => setTeam(item)} // atualiza o time atual ao pressionar o filtro
+              />
+            )}
+            horizontal // define a lista como horizontal
+          />
+
+          <Text className="text-GRAY_200 font-bold text-lg">
+            {players.length} {/* mostra o número total de jogadores */}
+          </Text>
+        </View>
+
         <FlatList
-          data={["Time A", "Time B"]}
+          data={players}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <Filter
-              title={item}
-              isActive={item === team} // verifica se o time atual é o mesmo do filtro
-              onPress={() => setTeam(item)} // atualiza o time atual ao pressionar o filtro
-            />
+            <PlayerCard onRemove={() => {}} name={item} />
           )}
-          horizontal // define a lista como horizontal
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[
+            { paddingBottom: 150 },
+            players.length === 0 && { flex: 1 }, // centraliza a mensagem caso a lista estiver vazia
+          ]}
+          ListEmptyComponent={() => {
+            return (
+              <ListEmpty
+                title="Não há pessoas nesse time"
+                subtitle="Que tal adicionar a primeira pessoa?"
+              />
+            );
+          }}
         />
 
-        <Text className="text-GRAY_200 font-bold text-lg">
-          {players.length} {/* mostra o número total de jogadores */}
-        </Text>
-      </View>
-
-      <FlatList
-        data={players}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <PlayerCard onRemove={() => {}} name={item} />
-        )}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          { paddingBottom: 150 },
-          players.length === 0 && { flex: 1 }, // centraliza a mensagem caso a lista estiver vazia
-        ]}
-        ListEmptyComponent={() => {
-          return (
-            <ListEmpty
-              title="Não há pessoas nesse time"
-              subtitle="Que tal adicionar a primeira pessoa?"
-            />
-          );
-        }}
-      />
-
-      <Button title="Remover turma" variant="secondary" />
-    </SafeAreaView>
-  );
+        <Button title="Remover turma" variant="secondary" />
+      </SafeAreaView>
+    );
+  }
 }

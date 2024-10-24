@@ -1,8 +1,8 @@
-import { FlatList, View } from "react-native";
+import { FlatList } from "react-native";
 import { Header } from "../../components/header";
 import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { GroupCard } from "../../components/groupCard";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
