@@ -10,7 +10,7 @@ type PlayerCardProps = {
 export function PlayerCard({ name, onRemove }: PlayerCardProps) {
   return (
     <View
-      style={{ marginBottom: 16 }}
+      style={{ marginBottom: 12 }}
       className="w-full h-16 bg-GRAY_500 flex-row items-center rounded-md"
     >
       <View

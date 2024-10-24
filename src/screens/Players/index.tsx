@@ -4,7 +4,7 @@ import { TitleAndSubtitle } from "../../components/titleAndSubtitle";
 import { ButtonIcon } from "../../components/buttonIcon";
 import { Input } from "../../components/input";
 import { Filter } from "../../components/filter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlayerCard } from "../../components/playerCard";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
@@ -12,7 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
 import { AppError } from "../../utils/AppError";
 import { playerAddGroup } from "../../storage/player/playerAddGroup";
-import { playersGetGroup } from "../../storage/player/playersGetGroup";
+import { playersGetGroupAndTeam } from "../../storage/player/playersGetGroupAndTeam";
+import { PlayerStorageDTS } from "../../storage/player/PlayerStorageDTS";
 
 // define a tipagem para os parâmetros que o componente Players receberá via navegação
 type PlayersProps = {
@@ -24,13 +25,14 @@ export function Players() {
 
   // declarando o estado para o time atual e a lista de jogadores
   const [team, setTeam] = useState("Time A"); // inicializa o estado do time com "Time A"
-  const [players, setPlayers] = useState([]); // inicializa o estado dos jogadores como um array vazio
+  const [players, setPlayers] = useState<PlayerStorageDTS[]>([]); // inicializa o estado dos jogadores como um array vazio
 
   // obtém os parâmetros da rota atual
   const route = useRoute(); // chama o hook useRoute para acessar os parâmetros da rota
   const { group } = route.params as PlayersProps; // extrai o parâmetro 'group' da rota e o tipa como PlayersProps
 
   async function handleAddPlayer() {
+    // verifica se o campo "newPlayerName" está vazio ou contém apenas espaços em branco
     if (newPlayerName.trim().length === 0) {
       return Alert.alert(
         "Nova Pessoa",
@@ -38,16 +40,16 @@ export function Players() {
       );
     }
 
+    // cria um novo objeto representando o jogador a ser adicionado, contendo o nome e o time
     const newPlayer = {
-      name: newPlayerName,
-      team,
+      name: newPlayerName, // nome do jogador, vindo de uma variável externa
+      team, // time do jogador, também vindo de uma variável externa
     };
 
     try {
+      // tenta adicionar o novo jogador ao grupo chamando uma função assíncrona que manipula a adição no banco de dados ou armazenamento
       await playerAddGroup(newPlayer, group);
-      const players = await playersGetGroup(group);
-
-      console.log(players);
+      fetchPlayersTeam();
     } catch (error) {
       if (error instanceof AppError) {
         Alert.alert("Nova Pessoa", error.message);
@@ -57,6 +59,20 @@ export function Players() {
       }
     }
   }
+
+  async function fetchPlayersTeam() {
+    try {
+      const playersTeam = await playersGetGroupAndTeam(group, team);
+      setPlayers(playersTeam);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Jogadores", "Não foi possível carregar os jogadores.");
+    }
+  }
+
+  useEffect(() => {
+    fetchPlayersTeam(); // carrega os jogadores do grupo ao iniciar a tela
+  }, [team]);
 
   return (
     <SafeAreaView
@@ -82,7 +98,7 @@ export function Players() {
           className="flex-1"
         />
 
-        <ButtonIcon icon="add" color="#00875F" />
+        <ButtonIcon onPress={handleAddPlayer} icon="add" color="#00875F" />
       </View>
 
       <View
@@ -114,9 +130,9 @@ export function Players() {
 
       <FlatList
         data={players}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <PlayerCard onRemove={() => {}} name={item} />
+          <PlayerCard onRemove={() => {}} name={item.name} />
         )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
