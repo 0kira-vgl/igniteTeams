@@ -56,84 +56,84 @@ export function Players() {
         Alert.alert("Nova Pessoa", "Não foi possível adicionar.");
       }
     }
+  }
 
-    return (
-      <SafeAreaView
-        style={{
-          height: "100%",
-          backgroundColor: "#202024",
-          padding: 24,
-        }}
-        className="h-screen bg-GRAY_600 p-6"
-      >
-        <Header showBackButton />
+  return (
+    <SafeAreaView
+      style={{
+        height: "100%",
+        backgroundColor: "#202024",
+        padding: 24,
+      }}
+      className="h-screen bg-GRAY_600 p-6"
+    >
+      <Header showBackButton />
 
-        <TitleAndSubtitle
-          title={group} // exibe o nome do grupo passado como parâmetro na tela
-          subtitle="adicione a galera e separe os times"
+      <TitleAndSubtitle
+        title={group} // exibe o nome do grupo passado como parâmetro na tela
+        subtitle="adicione a galera e separe os times"
+      />
+
+      <View className="w-full bg-GRAY_700 flex-row items-center justify-center rounded-md">
+        <Input
+          placeholder="Nome do participante"
+          onChangeText={setNewPlayerName}
+          autoCorrect={false} // desativa a correção automática
+          className="flex-1"
         />
 
-        <View className="w-full bg-GRAY_700 flex-row items-center justify-center rounded-md">
-          <Input
-            placeholder="Nome do participante"
-            onChangeText={setNewPlayerName}
-            autoCorrect={false} // desativa a correção automática
-            className="flex-1"
-          />
+        <ButtonIcon icon="add" color="#00875F" />
+      </View>
 
-          <ButtonIcon onPress={handleAddPlayer} icon="add" color="#00875F" />
-        </View>
-
-        <View
-          style={{
-            width: "100%",
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: 32,
-            marginBottom: 20,
-          }}
-        >
-          <FlatList
-            data={["Time A", "Time B"]}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <Filter
-                title={item}
-                isActive={item === team} // verifica se o time atual é o mesmo do filtro
-                onPress={() => setTeam(item)} // atualiza o time atual ao pressionar o filtro
-              />
-            )}
-            horizontal // define a lista como horizontal
-          />
-
-          <Text className="text-GRAY_200 font-bold text-lg">
-            {players.length} {/* mostra o número total de jogadores */}
-          </Text>
-        </View>
-
+      <View
+        style={{
+          width: "100%",
+          flexDirection: "row",
+          alignItems: "center",
+          marginTop: 32,
+          marginBottom: 20,
+        }}
+      >
         <FlatList
-          data={players}
+          data={["Time A", "Time B"]}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <PlayerCard onRemove={() => {}} name={item} />
+            <Filter
+              title={item}
+              isActive={item === team} // verifica se o time atual é o mesmo do filtro
+              onPress={() => setTeam(item)} // atualiza o time atual ao pressionar o filtro
+            />
           )}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            { paddingBottom: 150 },
-            players.length === 0 && { flex: 1 }, // centraliza a mensagem caso a lista estiver vazia
-          ]}
-          ListEmptyComponent={() => {
-            return (
-              <ListEmpty
-                title="Não há pessoas nesse time"
-                subtitle="Que tal adicionar a primeira pessoa?"
-              />
-            );
-          }}
+          horizontal // define a lista como horizontal
         />
 
-        <Button title="Remover turma" variant="secondary" />
-      </SafeAreaView>
-    );
-  }
+        <Text className="text-GRAY_200 font-bold text-lg">
+          {players.length} {/* mostra o número total de jogadores */}
+        </Text>
+      </View>
+
+      <FlatList
+        data={players}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => (
+          <PlayerCard onRemove={() => {}} name={item} />
+        )}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          { paddingBottom: 150 },
+          players.length === 0 && { flex: 1 }, // centraliza a mensagem caso a lista estiver vazia
+        ]}
+        ListEmptyComponent={() => {
+          return (
+            <ListEmpty
+              title="Não há pessoas nesse time"
+              subtitle="Que tal adicionar a primeira pessoa?"
+            />
+          );
+        }}
+      />
+
+      <Button title="Remover turma" variant="secondary" />
+    </SafeAreaView>
+  );
 }
