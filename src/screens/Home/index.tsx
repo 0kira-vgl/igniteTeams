@@ -8,8 +8,10 @@ import { Button } from "../../components/button";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { groupsGetAll } from "../../storage/group/groupsGetAll";
+import { Loading } from "../../components/loading";
 
 export function Home() {
+  const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState<string[]>([]); // lista de usuarios
   const navigation = useNavigation();
 
@@ -19,10 +21,14 @@ export function Home() {
 
   async function fetchGroups() {
     try {
+      setIsLoading(true);
+
       const data = await groupsGetAll(); // pega a lista de groups
       setGroups(data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -32,7 +38,7 @@ export function Home() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchGroups(); // carrega as turmas ao iniciar a tela
+      fetchGroups(); // carrega as grupos ao iniciar a tela
     }, [])
   );
 
@@ -47,27 +53,31 @@ export function Home() {
     >
       <Header />
 
-      <TitleAndSubtitle title="Turmas" subtitle="jogue com a sua turma" />
+      <TitleAndSubtitle title="Grupos" subtitle="jogue com o seu grupo" />
 
-      <FlatList
-        showsVerticalScrollIndicator={false} // rremover scroll
-        data={groups}
-        keyExtractor={(item) => item} // key
-        renderItem={({ item }) => (
-          <GroupCard onPress={() => handleOpenGroup(item)} title={item} />
-        )}
-        contentContainerStyle={groups.length === 0 && { flex: 1 }} // "centraliza" o ListEmpty caso a lista estiver vazia
-        ListEmptyComponent={() => {
-          return (
-            <ListEmpty
-              title="Você ainda não tem turmas cadastradas"
-              subtitle="Que tal criar a primeira turma?"
-            />
-          );
-        }}
-      />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          showsVerticalScrollIndicator={false} // rremover scroll
+          data={groups}
+          keyExtractor={(item) => item} // key
+          renderItem={({ item }) => (
+            <GroupCard onPress={() => handleOpenGroup(item)} title={item} />
+          )}
+          contentContainerStyle={groups.length === 0 && { flex: 1 }} // "centraliza" o ListEmpty caso a lista estiver vazia
+          ListEmptyComponent={() => {
+            return (
+              <ListEmpty
+                title="Você ainda não tem grupos cadastradas"
+                subtitle="Que tal criar a primeira grupo?"
+              />
+            );
+          }}
+        />
+      )}
 
-      <Button title="Criar nova turma" onPress={handleNewGroup} />
+      <Button title="Criar novo grupo" onPress={handleNewGroup} />
     </SafeAreaView>
   );
 }

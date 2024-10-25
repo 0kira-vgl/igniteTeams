@@ -9,12 +9,14 @@ import { PlayerCard } from "../../components/playerCard";
 import { ListEmpty } from "../../components/listEmpty";
 import { Button } from "../../components/button";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppError } from "../../utils/AppError";
 import { playerAddGroup } from "../../storage/player/playerAddGroup";
 import { playersGetGroupAndTeam } from "../../storage/player/playersGetGroupAndTeam";
 import { PlayerStorageDTS } from "../../storage/player/PlayerStorageDTS";
 import { playerRemoveGroup } from "../../storage/player/playerRemoveGroup";
+import { groupRemoveByName } from "../../storage/group/groupRemoveByName";
+import { Loading } from "../../components/loading";
 
 // define a tipagem para os parâmetros que o componente Players receberá via navegação
 type PlayersProps = {
@@ -23,6 +25,7 @@ type PlayersProps = {
 
 export function Players() {
   const [newPlayerName, setNewPlayerName] = useState(""); // guarda o nome digitado
+  const [isLoading, setIsLoading] = useState(true);
 
   // declarando o estado para o time atual e a lista de jogadores
   const [team, setTeam] = useState("Time A"); // inicializa o estado do time com "Time A"
@@ -31,6 +34,8 @@ export function Players() {
   // obtém os parâmetros da rota atual
   const route = useRoute(); // chama o hook useRoute para acessar os parâmetros da rota
   const { group } = route.params as PlayersProps; // extrai o parâmetro 'group' da rota e o tipa como PlayersProps
+
+  const navigation = useNavigation();
 
   const newPlayerNameInputRef = useRef<TextInput>(null);
 
@@ -69,12 +74,40 @@ export function Players() {
 
   async function fetchPlayersTeam() {
     try {
+      setIsLoading(true);
       const playersTeam = await playersGetGroupAndTeam(group, team);
       setPlayers(playersTeam);
     } catch (error) {
       console.log(error);
       Alert.alert("Jogadores", "Não foi possível carregar os jogadores.");
+    } finally {
+      setIsLoading(false);
     }
+  }
+
+  async function groupRemove() {
+    try {
+      await groupRemoveByName(group);
+      navigation.navigate("home");
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Remover grupo", "Não foi possível remover grupo.");
+    }
+  }
+
+  async function handleGroupRemove() {
+    Alert.alert("Remover", `Deseja remover grupo ${group}?`, [
+      {
+        text: "Não",
+        style: "cancel",
+      },
+
+      {
+        text: "Sim",
+        style: "destructive",
+        onPress: () => groupRemove(),
+      },
+    ]);
   }
 
   async function handlePlayerRemove(playerName: string) {
@@ -149,31 +182,39 @@ export function Players() {
         </Text>
       </View>
 
-      <FlatList
-        data={players}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => (
-          <PlayerCard
-            onRemove={() => handlePlayerRemove(item.name)}
-            name={item.name}
-          />
-        )}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          { paddingBottom: 150 },
-          players.length === 0 && { flex: 1 }, // centraliza a mensagem caso a lista estiver vazia
-        ]}
-        ListEmptyComponent={() => {
-          return (
-            <ListEmpty
-              title="Não há pessoas nesse time"
-              subtitle="Que tal adicionar a primeira pessoa?"
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={players}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => (
+            <PlayerCard
+              onRemove={() => handlePlayerRemove(item.name)}
+              name={item.name}
             />
-          );
-        }}
-      />
+          )}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[
+            { paddingBottom: 150 },
+            players.length === 0 && { flex: 1 }, // centraliza a mensagem caso a lista estiver vazia
+          ]}
+          ListEmptyComponent={() => {
+            return (
+              <ListEmpty
+                title="Não há pessoas nesse time"
+                subtitle="Que tal adicionar a primeira pessoa?"
+              />
+            );
+          }}
+        />
+      )}
 
-      <Button title="Remover turma" variant="secondary" />
+      <Button
+        onPress={handleGroupRemove}
+        title="Remover grupo"
+        variant="secondary"
+      />
     </SafeAreaView>
   );
 }

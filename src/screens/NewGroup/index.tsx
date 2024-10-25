@@ -17,7 +17,7 @@ export function NewGroup() {
   async function handleNewGroup() {
     try {
       if (group.trim().length === 0) {
-        return Alert.alert("Novo Grupo", "Informe o nome da turma.");
+        return Alert.alert("Novo Grupo", "Informe o nome da grupo.");
       } // verica se o input está vazio e não conta os espaços
 
       await groupCreate(group); // armazena o groupo no local storage
@@ -47,11 +47,11 @@ export function NewGroup() {
         <View className="items-center">
           <Users size={56} color="#00875F" className="" />
           <TitleAndSubtitle
-            title="Nova Turma"
-            subtitle="crie uma turma para adicionar pessoas"
+            title="Nova Grupo"
+            subtitle="crie um grupo para adicionar pessoas"
           />
 
-          <Input placeholder="Nome da turma" onChangeText={setGroup} />
+          <Input placeholder="Nome da grupo" onChangeText={setGroup} />
 
           <Button
             title="Criar"
