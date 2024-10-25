@@ -14,6 +14,7 @@ import { AppError } from "../../utils/AppError";
 import { playerAddGroup } from "../../storage/player/playerAddGroup";
 import { playersGetGroupAndTeam } from "../../storage/player/playersGetGroupAndTeam";
 import { PlayerStorageDTS } from "../../storage/player/PlayerStorageDTS";
+import { playerRemoveGroup } from "../../storage/player/playerRemoveGroup";
 
 // define a tipagem para os parâmetros que o componente Players receberá via navegação
 type PlayersProps = {
@@ -73,6 +74,16 @@ export function Players() {
     } catch (error) {
       console.log(error);
       Alert.alert("Jogadores", "Não foi possível carregar os jogadores.");
+    }
+  }
+
+  async function handlePlayerRemove(playerName: string) {
+    try {
+      await playerRemoveGroup(playerName, group);
+      fetchPlayersTeam();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Remover Pessoa", `Não foi possível remover ${playerName}.`);
     }
   }
 
@@ -142,7 +153,10 @@ export function Players() {
         data={players}
         keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <PlayerCard onRemove={() => {}} name={item.name} />
+          <PlayerCard
+            onRemove={() => handlePlayerRemove(item.name)}
+            name={item.name}
+          />
         )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
